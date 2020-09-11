@@ -14,20 +14,24 @@ install_banner() {
     echo -e "\033[1;32m[+] Installing $name \033[1;37m"
 }
 
-install_banner "git, nmap, masscan, chromium, npm, golang"
-[ -x "$(command -v git)" ] || sudo $PACKGE_MANAGER install git -y 2>/dev/null
-[ -x "$(command -v nmap)" ] || sudo $PACKGE_MANAGER install nmap -y 2>/dev/null
-[ -x "$(command -v masscan)" ] || sudo $PACKGE_MANAGER install masscan -y 2>/dev/null
-[ -x "$(command -v chromium)" ] || sudo $PACKGE_MANAGER install chromium -y 2>/dev/null
-[ -x "$(command -v make)" ] || sudo $PACKGE_MANAGER install build-essential -y 2>/dev/null
-[ -x "$(command -v csvlook)" ] || sudo $PACKGE_MANAGER install csvkit -y 2>/dev/null
-[ -x "$(command -v rg)" ] || sudo $PACKGE_MANAGER install ripgrep -y 2>/dev/null
-[ -x "$(command -v unzip)" ] || sudo $PACKGE_MANAGER install unzip -y 2>/dev/null
-[ -x "$(command -v chromium-browser)" ] || sudo $PACKGE_MANAGER install chromium-browser -y 2>/dev/null
-[ -x "$(command -v xsltproc)" ] || sudo $PACKGE_MANAGER install xsltproc -y 2>/dev/null
-[ -x "$(command -v make)" ] || sudo $PACKGE_MANAGER install build-essential -y 2>/dev/null
-[ -x "$(command -v pip)" ] || sudo $PACKGE_MANAGER install python-pip -y 2>/dev/null
-[ -x "$(command -v pip3)" ] || sudo $PACKGE_MANAGER install python3-pip -y 2>/dev/null
+# install_banner "curl, wget, libcurl4-openssl-dev, bsdmainutils, git, nmap, masscan, chromium, make, csvlook, rg, unzip, chromium-browser, xsltproc, pip, pip3, npm, golang"
+# [ -x "$(command -v curl)" ] || sudo $PACKGE_MANAGER install curl -y 2>/dev/null
+# [ -x "$(command -v wget)" ] || sudo $PACKGE_MANAGER install wget -y 2>/dev/null
+# [ -x "$(command -v libcurl4-openssl-dev)" ] || sudo $PACKGE_MANAGER install libcurl4-openssl-dev -y 2>/dev/null
+# [ -x "$(command -v bsdmainutils)" ] || sudo $PACKGE_MANAGER install bsdmainutils -y 2>/dev/null
+# [ -x "$(command -v git)" ] || sudo $PACKGE_MANAGER install git -y 2>/dev/null
+# [ -x "$(command -v nmap)" ] || sudo $PACKGE_MANAGER install nmap -y 2>/dev/null
+# [ -x "$(command -v masscan)" ] || sudo $PACKGE_MANAGER install masscan -y 2>/dev/null
+# [ -x "$(command -v chromium)" ] || sudo $PACKGE_MANAGER install chromium -y 2>/dev/null
+# [ -x "$(command -v make)" ] || sudo $PACKGE_MANAGER install build-essential -y 2>/dev/null
+# [ -x "$(command -v csvlook)" ] || sudo $PACKGE_MANAGER install csvkit -y 2>/dev/null
+# [ -x "$(command -v rg)" ] || sudo $PACKGE_MANAGER install ripgrep -y 2>/dev/null
+# [ -x "$(command -v unzip)" ] || sudo $PACKGE_MANAGER install unzip -y 2>/dev/null
+# [ -x "$(command -v chromium-browser)" ] || sudo $PACKGE_MANAGER install chromium-browser -y 2>/dev/null
+# [ -x "$(command -v xsltproc)" ] || sudo $PACKGE_MANAGER install xsltproc -y 2>/dev/null
+# [ -x "$(command -v pip)" ] || sudo $PACKGE_MANAGER install python-pip -y 2>/dev/null && cp -av /usr/bin/pip2 /usr/bin/pip2.7 
+# [ -x "$(command -v pip3)" ] || sudo $PACKGE_MANAGER install python3-pip -y 2>/dev/null
+# [ -x "$(command -v npm)" ] || sudo $PACKGE_MANAGER install npm -y 2>/dev/null
 
 pip install setuptools 2>/dev/null
 pip3 install setuptools 2>/dev/null
@@ -44,8 +48,8 @@ mkdir -p $DATA_PATH/wordlists/params/ 2>/dev/null
 mkdir -p $PLUGINS_PATH 2>/dev/null
 mkdir -p $DATA_PATH/nmap-stuff/ 2>/dev/null
 mkdir -p $PLUGINS_PATH/nmap-stuff/ 2>/dev/null
-mkdir -p "$GO_DIR" 2>/dev/null
-mkdir -p "$PLUGINS_PATH/go/" 2>/dev/null
+# mkdir -p "$GO_DIR" 2>/dev/null
+# mkdir -p "$PLUGINS_PATH/go/" 2>/dev/null
 
 # domain discovery
 
@@ -133,8 +137,8 @@ python3 scripts/reload.py
 if ! grep -Fxq "GOPATH" "$DEFAULT_SHELL"; then
     # echo 'export GOPATH=$HOME/go' >>$DEFAULT_SHELL
     # echo 'PATH=$GOPATH/bin:$PATH' >>$DEFAULT_SHELL
+    echo 'export GOROOT=/usr/local/go' >>$DEFAULT_SHELL
     echo 'export GOPATH=$HOME/go' >>$DEFAULT_SHELL
-    echo 'export GOPATH=$HOME/work' >>$DEFAULT_SHELL
     echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' >>$DEFAULT_SHELL
     source $DEFAULT_SHELL
 fi
@@ -144,8 +148,8 @@ source $DEFAULT_SHELL
 # update golang version
 install_banner "Install Golang latest version"
 GO_VERSION=1.15.2
-wget https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz -P /tmp && \
-tar xvf /tmp/go${GO_VERSION}.linux-amd64.tar.gz && \
+wget -q https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz -P /tmp && \
+tar xf /tmp/go${GO_VERSION}.linux-amd64.tar.gz && \
 sudo chown -R $USER:$USER ./go && \
 sudo mv go /usr/local
 GO_BIN="/usr/local/go/bin/go"
@@ -168,11 +172,11 @@ $GO_BIN get -u github.com/michenriksen/aquatone
 install_banner "gitrob"
 # $GO_BIN get -u github.com/michenriksen/gitrob
 GITROB_VERSION=2.0.0-beta
-wget https://github.com/michenriksen/gitrob/releases/download/${GITROB_VERSION}/gitrob_linux_amd64_${GITROB_VERSION}.zip -P /tmp && \
-unzip -j /tmp/gitrob_linux_amd64_${GITROB_VERSION}.zip gitrob -d /tmp && \
+wget -q https://github.com/michenriksen/gitrob/releases/download/v${GITROB_VERSION}/gitrob_linux_amd64_${GITROB_VERSION}.zip -O /tmp/gitrob.zip && \
+unzip -q -j /tmp/gitrob.zip gitrob -d /tmp && \
 sudo chown -R $USER:$USER /tmp/gitrob && \
 mv /tmp/gitrob /usr/local/bin && \
-rm /tmp/gitrob_linux_amd64_${GITROB_VERSION}.zip
+rm /tmp/gitrob.zip
 
 install_banner "subjack"
 $GO_BIN get -u github.com/haccer/subjack
@@ -186,10 +190,10 @@ $GO_BIN get -u github.com/subfinder/goaltdns
 install_banner "gitleaks"
 # $GO_BIN get -u github.com/zricethezav/gitleaks
 GITLEAKS_VERSION=6.1.2
-wget https://github.com/zricethezav/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks-linux-amd64 -P /tmp && \
-chmod +x /tmp/gitleaks-linux-amd64 && \
-sudo chown -R $USER:$USER /tmp/gitleaks-linux-amd64 && \
-sudo mv /tmp/gitleaks-linux-amd64 /usr/local/bin/gitleaks
+wget -q https://github.com/zricethezav/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks-linux-amd64 -O /tmp/gitleaks && \
+chmod +x /tmp/gitleaks && \
+sudo chown -R $USER:$USER /tmp/gitleaks && \
+sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
 
 
 install_banner "gowitness"
@@ -221,9 +225,6 @@ install_banner "amass"
 GO111MODULE=on $GO_BIN get github.com/OWASP/Amass/v3/... 2>/dev/null
 install_banner "jaeles"
 GO111MODULE=on $GO_BIN get github.com/jaeles-project/jaeles 2>/dev/null
-
-install_banner "unfurl"
-GO111MODULE=on $GO_BIN get -u github.com/tomnomnom/unfurl
 
 cp $GO_DIR/* "$PLUGINS_PATH/go/" 2>/dev/null
 # install_banner "observatory"
