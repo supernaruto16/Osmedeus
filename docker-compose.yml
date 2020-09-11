@@ -7,7 +7,7 @@ services:
             context: .
             dockerfile: Dockerfile
         ports:
-            - "8000:8000"
+            - "8180:8000"
         volumes:
             - osmedeusworkspaces:/root/.osmedeus/workspaces
         environment:

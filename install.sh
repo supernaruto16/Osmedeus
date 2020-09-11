@@ -131,8 +131,11 @@ python3 scripts/reload.py
 
 ### adding gopath if GOPATH not in default shellrc
 if ! grep -Fxq "GOPATH" "$DEFAULT_SHELL"; then
+    # echo 'export GOPATH=$HOME/go' >>$DEFAULT_SHELL
+    # echo 'PATH=$GOPATH/bin:$PATH' >>$DEFAULT_SHELL
     echo 'export GOPATH=$HOME/go' >>$DEFAULT_SHELL
-    echo 'PATH=$GOPATH/bin:$PATH' >>$DEFAULT_SHELL
+    echo 'export GOPATH=$HOME/work' >>$DEFAULT_SHELL
+    echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' >>$DEFAULT_SHELL
     source $DEFAULT_SHELL
 fi
 PS="$ "
@@ -140,8 +143,12 @@ source $DEFAULT_SHELL
 
 # update golang version
 install_banner "Install Golang latest version"
-wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash 2>&1 >/dev/null
-GO_BIN="$HOME/.go/bin/go"
+GO_VERSION=1.15.2
+wget https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz -P /tmp && \
+tar xvf /tmp/go${GO_VERSION}.linux-amd64.tar.gz && \
+sudo chown -R $USER:$USER ./go && \
+sudo mv go /usr/local
+GO_BIN="/usr/local/go/bin/go"
 # in case the script fail
 [[ -f $GO_BIN ]] || GO_BIN=$(which go)
 echo -e "\033[1;32m[+] Detected go binary: $GO_BIN \033[0m"
@@ -157,18 +164,34 @@ install_banner "gobuster"
 $GO_BIN get -u github.com/OJ/gobuster
 install_banner "aquatone"
 $GO_BIN get -u github.com/michenriksen/aquatone
+
 install_banner "gitrob"
-$GO_BIN get -u github.com/michenriksen/gitrob
+# $GO_BIN get -u github.com/michenriksen/gitrob
+GITROB_VERSION=2.0.0-beta
+wget https://github.com/michenriksen/gitrob/releases/download/${GITROB_VERSION}/gitrob_linux_amd64_${GITROB_VERSION}.zip -P /tmp && \
+unzip -j /tmp/gitrob_linux_amd64_${GITROB_VERSION}.zip gitrob -d /tmp && \
+sudo chown -R $USER:$USER /tmp/gitrob && \
+mv /tmp/gitrob /usr/local/bin && \
+rm /tmp/gitrob_linux_amd64_${GITROB_VERSION}.zip
+
 install_banner "subjack"
 $GO_BIN get -u github.com/haccer/subjack
 install_banner "tko-subs"
 $GO_BIN get -u github.com/anshumanbh/tko-subs
-install_banner "subzy"
+install_banner "subzy"ls
 $GO_BIN get -u github.com/lukasikic/subzy
 install_banner "goaltdns"
 $GO_BIN get -u github.com/subfinder/goaltdns
+
 install_banner "gitleaks"
-$GO_BIN get -u github.com/zricethezav/gitleaks
+# $GO_BIN get -u github.com/zricethezav/gitleaks
+GITLEAKS_VERSION=6.1.2
+wget https://github.com/zricethezav/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks-linux-amd64 -P /tmp && \
+chmod +x /tmp/gitleaks-linux-amd64 && \
+sudo chown -R $USER:$USER /tmp/gitleaks-linux-amd64 && \
+sudo mv /tmp/gitleaks-linux-amd64 /usr/local/bin/gitleaks
+
+
 install_banner "gowitness"
 $GO_BIN get -u github.com/sensepost/gowitness
 install_banner "webanalyze"
@@ -189,6 +212,7 @@ install_banner "ffuf"
 $GO_BIN get -u github.com/ffuf/ffuf
 install_banner "metabigor"
 $GO_BIN get -u github.com/j3ssie/metabigor
+install_banner "gospider"
 $GO_BIN get -u github.com/jaeles-project/gospider
 install_banner "go cli-utils"
 $GO_BIN get -u github.com/j3ssie/go-auxs/just-resolved
@@ -197,6 +221,9 @@ install_banner "amass"
 GO111MODULE=on $GO_BIN get github.com/OWASP/Amass/v3/... 2>/dev/null
 install_banner "jaeles"
 GO111MODULE=on $GO_BIN get github.com/jaeles-project/jaeles 2>/dev/null
+
+install_banner "unfurl"
+GO111MODULE=on $GO_BIN get -u github.com/tomnomnom/unfurl
 
 cp $GO_DIR/* "$PLUGINS_PATH/go/" 2>/dev/null
 # install_banner "observatory"
