@@ -6,6 +6,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        command: python3 /home/Osmedeus/server/manage.py runserver 0.0.0.0:8000
         ports:
             - "8180:8000"
         volumes:

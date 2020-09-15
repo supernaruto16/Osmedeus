@@ -120,18 +120,18 @@ install_banner "nmap & masscan parser"
 [[ -f $PLUGINS_PATH/nmap-stuff/nmaptocsv.py ]] || wget -q -O $PLUGINS_PATH/nmap-stuff/nmaptocsv.py https://raw.githubusercontent.com/maaaaz/nmaptocsv/master/nmaptocsv.py
 
 ##
-chmod +x osmedeus.py
-install_banner "Osmedeus dependencies"
-pip3 install -r requirements.txt
-cd $CWD
-mkdir -p ~/.osmedeus 2>/dev/null
-install_banner "Initial config for Osmedeus"
-python3 server/manage.py makemigrations
-python3 server/manage.py migrate
-python3 server/manage.py makemigrations api
-python3 server/manage.py migrate api
-python3 scripts/init.py
-python3 scripts/reload.py
+# chmod +x osmedeus.py
+# install_banner "Osmedeus dependencies"
+# pip3 install -r requirements.txt
+# cd $CWD
+# mkdir -p ~/.osmedeus 2>/dev/null
+# install_banner "Initial config for Osmedeus"
+# python3 server/manage.py makemigrations
+# python3 server/manage.py migrate
+# python3 server/manage.py makemigrations api
+# python3 server/manage.py migrate api
+# python3 scripts/init.py
+# python3 scripts/reload.py
 
 ### adding gopath if GOPATH not in default shellrc
 if ! grep -Fxq "GOPATH" "$DEFAULT_SHELL"; then
@@ -140,13 +140,15 @@ if ! grep -Fxq "GOPATH" "$DEFAULT_SHELL"; then
     echo 'export GOROOT=/usr/local/go' >>$DEFAULT_SHELL
     echo 'export GOPATH=$HOME/go' >>$DEFAULT_SHELL
     echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' >>$DEFAULT_SHELL
+    echo 'export GO_PATH=$GOPATH/bin' >>$DEFAULT_SHELL
+    echo 'export PLUGINS_PATH=$CWD/plugins' >>$DEFAULT_SHELL
     source $DEFAULT_SHELL
 fi
 PS="$ "
 source $DEFAULT_SHELL
 
 # update golang version
-install_banner "Install Golang latest version"
+install_banner "Golang latest version"
 GO_VERSION=1.15.2
 wget -q https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz -P /tmp && \
 tar xf /tmp/go${GO_VERSION}.linux-amd64.tar.gz && \

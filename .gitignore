@@ -39,3 +39,4 @@ __pycache__/
 .idea/
 .vscode/
 venv/
+tool_configs/
