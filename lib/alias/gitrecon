@@ -32,7 +32,7 @@ def routine(args):
 
     if mode == 'user':
         for data in datas:
-            cmd = f'{plugin}/go/gitrob -save {output} -threads 10 -github-access-token {key} {data}'
+            cmd = f'gitrob -save {output} -threads 10 -github-access-token {key} {data}'
             utils.print_info(f"Execute: {cmd}")
             os.system(cmd)
     else:

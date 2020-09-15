@@ -25,7 +25,7 @@ def routine(args):
     wordlist = args.wordlist
     summary = args.summary
 
-    cmd = f"{plugin}/go/gobuster vhost -U 'Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)' -z -q -t 40 -u 'https://{target}' -w {wordlist} --insecuressl --username admin --password admin --output {output}/{target}-gobuster.txt"
+    cmd = f"gobuster vhost -U 'Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)' -z -q -t 40 -u 'https://{target}' -w {wordlist} --insecuressl --username admin --password admin --output {output}/{target}-gobuster.txt"
     # utils.print_info(f"Execute: {cmd}")
     os.system(cmd)
     # append to summary

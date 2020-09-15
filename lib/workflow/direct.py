@@ -18,19 +18,19 @@ class SubdomainScanning:
         'general': [
             {
                 "banner": "Amass",
-                "cmd": "$GO_PATH/amass enum -timeout 10 -active -max-dns-queries 10000 -include-unresolvable -dir $WORKSPACE/subdomain/amass-$OUTPUT -d $TARGET -o $WORKSPACE/subdomain/$OUTPUT-amass.txt",
+                "cmd": "amass enum -timeout 10 -active -max-dns-queries 10000 -include-unresolvable -dir $WORKSPACE/subdomain/amass-$OUTPUT -d $TARGET -o $WORKSPACE/subdomain/$OUTPUT-amass.txt",
                 "output_path": "$WORKSPACE/subdomain/$OUTPUT-amass.txt",
                 "std_path": "$WORKSPACE/subdomain/std-$TARGET-amass.std"
             },
             {
                 "banner": "Subfinder",
-                "cmd": "$GO_PATH/subfinder -d $TARGET -t 100 -o $WORKSPACE/subdomain/$OUTPUT-subfinder.txt -nW",
+                "cmd": "subfinder -d $TARGET -t 100 -o $WORKSPACE/subdomain/$OUTPUT-subfinder.txt -nW",
                 "output_path": "$WORKSPACE/subdomain/$OUTPUT-subfinder.txt",
                 "std_path": "$WORKSPACE/subdomain/std-$OUTPUT-subfinder.std"
             },
             {
                 "banner": "assetfinder",
-                "cmd": "$GO_PATH/assetfinder -subs-only $TARGET | tee $WORKSPACE/subdomain/$OUTPUT-assetfinder.txt",
+                "cmd": "assetfinder -subs-only $TARGET | tee $WORKSPACE/subdomain/$OUTPUT-assetfinder.txt",
                 "output_path": "$WORKSPACE/subdomain/$OUTPUT-assetfinder.txt",
                 "std_path": "$WORKSPACE/subdomain/std-$OUTPUT-assetfinder.std"
             },
@@ -42,7 +42,7 @@ class SubdomainScanning:
             },
             {
                 "banner": "gobuster",
-                "cmd": "$GO_PATH/gobuster dns --wildcard -q -t 100 -w $DATA_PATH/wordlists/dns/shorts.txt -d $TARGET -o $WORKSPACE/subdomain/raw-$OUTPUT-gobuster.txt",
+                "cmd": "gobuster dns --wildcard -q -t 100 -w $DATA_PATH/wordlists/dns/shorts.txt -d $TARGET -o $WORKSPACE/subdomain/raw-$OUTPUT-gobuster.txt",
                 "output_path": "$WORKSPACE/subdomain/raw-$OUTPUT-gobuster.txt",
                 "std_path": "$WORKSPACE/subdomain/std-raw-$OUTPUT-gobuster.std",
                 "post_run": "clean_gobuster",
@@ -104,7 +104,7 @@ class PermutationScan:
         'general': [
             {
                 "banner": "goaltdns",
-                "cmd": "$GO_PATH/goaltdns -w $DATA_PATH/wordlists/dns/short-permutation.txt -l $WORKSPACE/subdomain/final-$OUTPUT.txt -o $WORKSPACE/permutation/permutation-$OUTPUT.txt",
+                "cmd": "goaltdns -w $DATA_PATH/wordlists/dns/short-permutation.txt -l $WORKSPACE/subdomain/final-$OUTPUT.txt -o $WORKSPACE/permutation/permutation-$OUTPUT.txt",
                 "output_path": "$WORKSPACE/permutation/permutation-$OUTPUT.txt",
                 "std_path": "",
             },
@@ -141,8 +141,8 @@ class Probing:
             {
                 # this only run if something wrong with custom resolvers
                 "banner": "massdns resolve IP",
-                "requirement": "$WORKSPACE/probing/raw-all-$OUTPUT.txt",
-                "cmd": "cat $WORKSPACE/probing/raw-all-$OUTPUT.txt | $PLUGINS_PATH/massdns/bin/massdns -r $DATA_PATH/resolvers.txt -q -t A -o S -w $WORKSPACE/probing/raw-allmassdns.txt",
+                "requirement": "$WORKSPACE/subdomain/final-$OUTPUT.txt",
+                "cmd": "cat $WORKSPACE/subdomain/final-$OUTPUT.txt | $PLUGINS_PATH/massdns/bin/massdns -r $DATA_PATH/resolvers.txt -q -t A -o S -w $WORKSPACE/probing/raw-allmassdns.txt",
                 "output_path": "$WORKSPACE/probing/raw-allmassdns.txt",
                 "std_path": "",
                 "waiting": "last",
@@ -152,8 +152,8 @@ class Probing:
             },
             {
                 "banner": "httprobe",
-                "requirement": "$WORKSPACE/probing/raw-all-$OUTPUT.txt",
-                "cmd": "cat $WORKSPACE/probing/raw-all-$OUTPUT.txt | $GO_PATH/httprobe -c 100 -t 20000 | tee $WORKSPACE/probing/http-$OUTPUT.txt",
+                "requirement": "$WORKSPACE/subdomain/final-$OUTPUT.txt",
+                "cmd": "cat $WORKSPACE/subdomain/final-$OUTPUT.txt | httprobe -c 100 -t 20000 | tee $WORKSPACE/probing/http-$OUTPUT.txt",
                 "output_path": "$WORKSPACE/probing/http-$OUTPUT.txt",
                 "std_path": "$WORKSPACE/probing/std-http-$OUTPUT.std",
                 "waiting": "last",
@@ -222,7 +222,7 @@ class Fingerprint:
         'general': [
             {
                 "banner": "webanalyze",
-                "cmd": f"$GO_PATH/webanalyze -apps $DATA_PATH/apps.json -hosts $WORKSPACE/probing/http-$OUTPUT.txt -output json -worker {threads} | tee $WORKSPACE/fingerprint/$OUTPUT-technology.json",
+                "cmd": f"webanalyze -apps $DATA_PATH/apps.json -hosts $WORKSPACE/probing/http-$OUTPUT.txt -output json -worker {threads} | tee $WORKSPACE/fingerprint/$OUTPUT-technology.json",
                 "output_path": "$WORKSPACE/fingerprint/$OUTPUT-technology.json",
                 "std_path": "$WORKSPACE/fingerprint/std-$OUTPUT-technology.std",
                 "post_run": "update_tech",
@@ -230,14 +230,14 @@ class Fingerprint:
             },
             {
                 "banner": "meg /",
-                "cmd": "$GO_PATH/meg / $WORKSPACE/probing/http-$OUTPUT.txt $WORKSPACE/fingerprint/responses/ -v -c 100",
+                "cmd": "meg / $WORKSPACE/probing/http-$OUTPUT.txt $WORKSPACE/fingerprint/responses/ -v -c 100",
                 "output_path": "$WORKSPACE/fingerprint/responses/index",
                 "std_path": "",
             },
             {
                 "requirement": "$WORKSPACE/fingerprint/responses/index",
                 "banner": "rgf extract all",
-                "cmd": "$GO_PATH/rgf -dir $WORKSPACE/fingerprint/responses/ | tee $WORKSPACE/fingerprint/rgf-all-$OUTPUT.txt",
+                "cmd": "rgf -dir $WORKSPACE/fingerprint/responses/ | tee $WORKSPACE/fingerprint/rgf-all-$OUTPUT.txt",
                 "output_path": "$WORKSPACE/fingerprint/rgf-all-$OUTPUT.txt",
                 "std_path": "",
             },
@@ -263,19 +263,19 @@ class ScreenShot:
         'general': [
             {
                 "banner": "aquatone",
-                "cmd": f"cat $WORKSPACE/probing/resolved-$OUTPUT.txt | $GO_PATH/aquatone -scan-timeout 1000 -threads {threads} -out $WORKSPACE/screenshot/$OUTPUT-aquatone",
+                "cmd": f"cat $WORKSPACE/probing/resolved-$OUTPUT.txt | aquatone -scan-timeout 1000 -threads {threads} -out $WORKSPACE/screenshot/$OUTPUT-aquatone",
                 "output_path": "$WORKSPACE/screenshot/$OUTPUT-aquatone/aquatone_report.html",
                 "std_path": "$WORKSPACE/screenshot/std-$OUTPUT-aquatone.std"
             },
             {
                 "banner": "gowitness",
-                "cmd": f"$GO_PATH/gowitness file -s $WORKSPACE/probing/http-$OUTPUT.txt -t {threads}  --log-level fatal --destination  $WORKSPACE/screenshot/raw-gowitness/ --db $WORKSPACE/screenshot/gowitness.db",
+                "cmd": f"gowitness file -s $WORKSPACE/probing/http-$OUTPUT.txt -t {threads}  --log-level fatal --destination  $WORKSPACE/screenshot/raw-gowitness/ --db $WORKSPACE/screenshot/gowitness.db",
                 "output_path": "$WORKSPACE/screenshot/gowitness.db",
                 "std_path": "",
             },
             {
                 "banner": "gowitness gen report",
-                "cmd": "$GO_PATH/gowitness report generate -c 99999 -n $WORKSPACE/screenshot/$OUTPUT-raw-gowitness.html --destination $WORKSPACE/screenshot/raw-gowitness/ --db $WORKSPACE/screenshot/gowitness.db",
+                "cmd": "gowitness report generate -c 99999 -n $WORKSPACE/screenshot/$OUTPUT-raw-gowitness.html --destination $WORKSPACE/screenshot/raw-gowitness/ --db $WORKSPACE/screenshot/gowitness.db",
                 "output_path": "$WORKSPACE/screenshot/$OUTPUT-raw-gowitness-0.html",
                 "std_path": "$WORKSPACE/screenshot/std-$OUTPUT-aquatone.std",
                 "waiting": "last",
@@ -307,19 +307,19 @@ class StoScan:
         'general': [
             {
                 "banner": "tko-subs",
-                "cmd": "$GO_PATH/tko-subs -data $DATA_PATH/providers-data.csv -domains $WORKSPACE/probing/resolved-$OUTPUT.txt -output $WORKSPACE/stoscan/takeover-$TARGET-tko-subs.txt",
+                "cmd": "tko-subs -data $DATA_PATH/providers-data.csv -domains $WORKSPACE/probing/resolved-$OUTPUT.txt -output $WORKSPACE/stoscan/takeover-$TARGET-tko-subs.txt",
                 "output_path": "$WORKSPACE/stoscan/takeover-$TARGET-tko-subs.txt",
                 "std_path": "$WORKSPACE/stoscan/std-takeover-$TARGET-tko-subs.std",
             },
             {
                 "banner": "Subjack",
-                "cmd": "$GO_PATH/subjack -v -m -c $DATA_PATH/fingerprints.json -w $WORKSPACE/probing/resolved-$OUTPUT.txt -t 100 -timeout 30 -o $WORKSPACE/stoscan/takeover-$TARGET-subjack.txt -ssl",
+                "cmd": "subjack -v -m -c $DATA_PATH/fingerprints.json -w $WORKSPACE/probing/resolved-$OUTPUT.txt -t 100 -timeout 30 -o $WORKSPACE/stoscan/takeover-$TARGET-subjack.txt -ssl",
                 "output_path": "$WORKSPACE/stoscan/takeover-$TARGET-subjack.txt",
                 "std_path": "$WORKSPACE/stoscan/std-takeover-$TARGET-subjack.std"
             },
             {
                 "banner": "subzy",
-                "cmd": "$GO_PATH/subzy -hide_fails -https -concurrency 20 -targets $WORKSPACE/probing/resolved-$OUTPUT.txt | tee $WORKSPACE/stoscan/takeover-$TARGET-subzy.txt",
+                "cmd": "subzy -hide_fails -https -concurrency 20 -targets $WORKSPACE/probing/resolved-$OUTPUT.txt | tee $WORKSPACE/stoscan/takeover-$TARGET-subzy.txt",
                 "output_path": "$WORKSPACE/stoscan/takeover-$TARGET-subzy.txt",
                 "std_path": "$WORKSPACE/stoscan/std-takeover-$TARGET-subzy.std"
             },
@@ -333,14 +333,14 @@ class StoScan:
             {
                 "requirement": "$WORKSPACE/stoscan/all-dig-info.txt",
                 "banner": "rgf extract CNAME",
-                "cmd": "$GO_PATH/rgf -file $WORKSPACE/stoscan/all-dig-info.txt cname | tee $WORKSPACE/stoscan/have-cname.txt",
+                "cmd": "rgf -file $WORKSPACE/stoscan/all-dig-info.txt cname | tee $WORKSPACE/stoscan/have-cname.txt",
                 "output_path": "$WORKSPACE/stoscan/have-cname.txt",
                 "std_path": "",
             },
             {
                 "requirement": "$WORKSPACE/stoscan/all-dig-info.txt",
                 "banner": "rgf extract Azure",
-                "cmd": "$GO_PATH/rgf -file $WORKSPACE/stoscan/all-dig-info.txt azure | tee $WORKSPACE/stoscan/azure-sto.txt",
+                "cmd": "rgf -file $WORKSPACE/stoscan/all-dig-info.txt azure | tee $WORKSPACE/stoscan/azure-sto.txt",
                 "output_path": "$WORKSPACE/stoscan/azure-sto.txt",
                 "std_path": "",
             },
@@ -367,7 +367,7 @@ class LinkFinding:
             {
                 "requirement": "$WORKSPACE/probing/resolved-$OUTPUT.txt",
                 "banner": "waybackurls",
-                "cmd": "cat $WORKSPACE/probing/resolved-$OUTPUT.txt | $GO_PATH/waybackurls | tee $WORKSPACE/links/raw-wayback-$OUTPUT.txt",
+                "cmd": "cat $WORKSPACE/probing/resolved-$OUTPUT.txt | waybackurls | tee $WORKSPACE/links/raw-wayback-$OUTPUT.txt",
                 "output_path": "$WORKSPACE/links/raw-wayback-$OUTPUT.txt",
                 "std_path": "$WORKSPACE/links/std-wayback-$OUTPUT.std",
                 "post_run": "clean_waybackurls",
@@ -461,7 +461,7 @@ class PortScan:
             {
                 "requirement": "$WORKSPACE/portscan/http-$OUTPUT.txt",
                 "banner": "aquatone",
-                "cmd": f"cat $WORKSPACE/portscan/http-$OUTPUT.txt | $GO_PATH/aquatone -screenshot-timeout 50000 -threads {threads} -out $WORKSPACE/portscan/$OUTPUT-aquatone",
+                "cmd": f"cat $WORKSPACE/portscan/http-$OUTPUT.txt | aquatone -screenshot-timeout 50000 -threads {threads} -out $WORKSPACE/portscan/$OUTPUT-aquatone",
                 "output_path": "$WORKSPACE/portscan/$OUTPUT-aquatone/aquatone_report.html",
                 "std_path": "$WORKSPACE/portscan/std-$OUTPUT-aquatone.std",
                 "waiting": "last",
@@ -470,7 +470,7 @@ class PortScan:
             # {
             #     "requirement": "$WORKSPACE/portscan/$OUTPUT.csv",
             #     "banner": "Screenshot on ports found",
-            #     "cmd": "$GO_PATH/gowitness file -s $WORKSPACE/portscan/scheme-$OUTPUT.txt -t 30 --log-level fatal --destination $WORKSPACE/portscan/screenshot/raw-gowitness/ --db $WORKSPACE/portscan/screenshot/gowitness.db",
+            #     "cmd": "gowitness file -s $WORKSPACE/portscan/scheme-$OUTPUT.txt -t 30 --log-level fatal --destination $WORKSPACE/portscan/screenshot/raw-gowitness/ --db $WORKSPACE/portscan/screenshot/gowitness.db",
             #     "output_path": "$WORKSPACE/portscan/screenshot/gowitness.db",
             #     "std_path": "",
             #     "post_run": "clean_gowitness",
@@ -519,7 +519,7 @@ class VulnScan:
             {
                 "requirement": "$WORKSPACE/vulnscan/summary-$OUTPUT.csv",
                 "banner": "Screenshot on ports found",
-                "cmd": "$GO_PATH/gowitness file -s $WORKSPACE/vulnscan/scheme-$OUTPUT.txt -t 30 --log-level fatal --destination  $WORKSPACE/vulnscan/screenshot/raw-gowitness/ --db $WORKSPACE/vulnscan/screenshot/gowitness.db",
+                "cmd": "gowitness file -s $WORKSPACE/vulnscan/scheme-$OUTPUT.txt -t 30 --log-level fatal --destination  $WORKSPACE/vulnscan/screenshot/raw-gowitness/ --db $WORKSPACE/vulnscan/screenshot/gowitness.db",
                 "output_path": "$WORKSPACE/vulnscan/screenshot/gowitness.db",
                 "std_path": "",
                 # "waiting": "last",
@@ -548,7 +548,7 @@ class IPSpace:
         'general': [
             {
                 "banner": "Metabigor IP Lookup",
-                "cmd": "echo '$TARGET' | $GO_PATH/metabigor net -o $WORKSPACE/ipspace/range-$OUTPUT.txt",
+                "cmd": "echo '$TARGET' | metabigor net -o $WORKSPACE/ipspace/range-$OUTPUT.txt",
                 "output_path": "$WORKSPACE/ipspace/range-$OUTPUT.txt",
                 "std_path": "",
                 "post_run": "get_amass",

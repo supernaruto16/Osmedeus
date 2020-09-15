@@ -19,7 +19,7 @@ def routine(args):
     plugin = args.plugin
     summary = args.summary
 
-    cmd = f"{plugin}/ffuf -w {wordlist} -t 20 -c -sf -fc '404,429,501,502,503' -D -e '.php,.asp,.jsp,.js,.html,.swp,.swf,.zip' -of csv -o {output}/{strip_target}.csv -u {target} | tee -a {summary}/raw-summary.txt"
+    cmd = f"ffuf -w {wordlist} -t 20 -c -sf -fc '404,429,501,502,503' -D -e '.php,.asp,.jsp,.js,.html,.swp,.swf,.zip' -of csv -o {output}/{strip_target}.csv -u {target} | tee -a {summary}/raw-summary.txt"
 
     # utils.print_info(f"Execute: {cmd}")
 
