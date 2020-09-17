@@ -18,7 +18,7 @@ def run(command):
     stdout = ''
     try:
         process = subprocess.Popen(
-            command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, executable="/bin/bash")
 
         # Poll process for new output until finished
         while True:

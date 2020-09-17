@@ -40,3 +40,4 @@ __pycache__/
 .vscode/
 venv/
 tool_configs/
+.devcontainer/

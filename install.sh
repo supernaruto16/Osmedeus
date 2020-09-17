@@ -166,6 +166,10 @@ echo -e "\033[1;32m[+] Detected go tools: $GO_DIR \033[0m"
 ##
 install_banner "subfinder"
 $GO_BIN get -u github.com/projectdiscovery/subfinder/cmd/subfinder
+install_banner "httpx"
+GO111MODULE=on $GO_BIN get -u github.com/projectdiscovery/httpx/cmd/httpx
+install_banner "naabu"
+GO111MODULE=on $GO_BIN get -u github.com/projectdiscovery/naabu/cmd/naabu
 install_banner "gobuster"
 $GO_BIN get -u github.com/OJ/gobuster
 install_banner "aquatone"
@@ -199,7 +203,7 @@ sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
 
 
 install_banner "gowitness"
-$GO_BIN get -u github.com/sensepost/gowitness
+GO111MODULE=on $GO_BIN get -u github.com/sensepost/gowitness
 install_banner "webanalyze"
 $GO_BIN get -u github.com/rverton/webanalyze/...
 install_banner "assetfinder"
@@ -224,9 +228,13 @@ install_banner "go cli-utils"
 $GO_BIN get -u github.com/j3ssie/go-auxs/just-resolved
 
 install_banner "amass"
-GO111MODULE=on $GO_BIN get github.com/OWASP/Amass/v3/... 2>/dev/null
+GO111MODULE=on $GO_BIN get -u github.com/OWASP/Amass/v3/... 2>/dev/null
 install_banner "jaeles"
-GO111MODULE=on $GO_BIN get github.com/jaeles-project/jaeles 2>/dev/null
+GO111MODULE=on $GO_BIN get -u github.com/jaeles-project/jaeles 2>/dev/null
+install_banner "nuclei"
+GO111MODULE=on go get -u github.com/projectdiscovery/nuclei/v2/cmd/nuclei
+install_banner "gau"
+GO111MODULE=on go get -u github.com/lc/gau
 
 cp $GO_DIR/* "$PLUGINS_PATH/go/" 2>/dev/null
 # install_banner "observatory"
